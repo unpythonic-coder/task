@@ -10,7 +10,8 @@ Plus I wanted to test out github before I release my next big bloated (but rathe
 
 ## Install
 
-1. Unzip the download and open a terminal in the unzipped folder
+1. Unzip the 
+![download](https://github.com/unpythonic-coder/task/archive/refs/heads/main.zip) and open a terminal in the unzipped folder
 2. Make the file executable; type the following and press ENTER:
 
 	```sudo chmod 755 task```
