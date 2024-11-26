@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+import os, sys, datetime, pathlib
+datapath = os.path.expanduser("~/.local/share/task")
+
+def main():
+    global tasks
+    tasks = get_tasks()
+    try:
+        cmd = sys.argv[1]
+    except IndexError:
+        cmd = None
+    try:
+        arg = ' '.join(sys.argv [2:])
+    except IndexError:
+        arg = None
+    if arg and arg.isdigit():
+        arg = int(arg)
+        if arg < 0 or arg >= len(tasks): cmd = "error"
+    if not cmd:
+        print_tasks()
+    elif cmd == "error":
+        print("ERROR, ID out of range.")
+    elif cmd in ( "-a", "--add") and arg:
+        add_task(arg)
+    elif cmd in ("-t", "--top", "-p") and arg is not None and type(arg) is int:
+        top(arg)
+    elif cmd in ("-d", "--done", "--delete") and arg is not None and type(arg) is int:
+        delete_task(arg)
+    elif cmd == "--delete-all":
+        file_write(datapath, "", show_tasks = False)
+    else:
+        print(help)
+
+def print_tasks():
+    if not tasks:
+        print("\nAll tasks done.\n")
+        return
+    print('\n ID===TASK=====================================ADD DATE==') 
+    for i, task in enumerate(tasks):
+        print(" {} {}".format(str(i).ljust(4), task))
+    print(' ========================================================')
+
+def add_task(task):
+    tasks.append(task.ljust(40)[:40] + " {}".format(str(datetime.datetime.today().date())))
+    file = make_file_from(tasks)
+    file_write(datapath, file)
+
+def top(id):
+    tasks.insert(0,tasks.pop(id))
+    file = make_file_from(tasks)
+    file_write(datapath, file)
+
+def delete_task(id):
+    if id < len(tasks): tasks.pop(id)
+    file = make_file_from(tasks)
+    file_write(datapath, file)
+
+def get_tasks():
+    file = file_read(datapath)
+    tasks = []
+    for i, line in enumerate(file):
+        task = line[4:].strip()
+        tasks.append(task)
+    return tasks
+
+def make_file_from(tasks):
+    file = ''
+    for i, task in enumerate(tasks):
+        id = str(i).ljust(4)
+        file += "{} {}\n".format(id, task[:70])
+    return file
+
+def file_read(path, default = '', mode = 'r'):
+    make_path_if_needed(path, default)
+    with open(path + '/DATA', mode) as file:
+        return file.readlines()
+
+def file_write(path, text, mode = 'w', show_tasks = True):
+    make_path_if_needed(path, text)
+    with open(path + '/DATA', mode) as file: #change mode to 'a' to append
+        file.write(text)
+    if show_tasks: print_tasks()
+
+def make_path_if_needed(path, default = ''):
+    dir = pathlib.Path(path)
+    try:
+        dir.mkdir(parents = True, exist_ok = False)
+    except FileExistsError:
+        return
+    with open(path + '/DATA', 'w+') as file:
+        file.write(default)
+
+help = """\ntask - a lightweight Task List/To Do application. MIT License.\n\ntask [options]\n
+  -a, --add 'STRING'    Adds new task to tasks. Quotes are optional.
+  -d, --done ID         Deletes item from tasks and updates task list.
+  -t, --top ID          Prioritizes task item (moves to top)
+  -h, --help            Show this message and exit.
+      --delete-all      Deletes all items from task list.\n"""
+
+main()
+
