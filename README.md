@@ -6,7 +6,7 @@ Task is a small, lightweight task manager/todo list for the linux terminal.
 ## Why?
 Just to see what I could do in 100 lines of python, since my projects tend to suffer from "feature creep" and become more bloated than I originally intended. 
 
-Plus I wanted to test out github before I release my next big bloated (but rather cool) project.
+Plus I wanted to test out github before I release my next big bloated (but rather cool) [project](https://github.com/unpythonic-coder/mplay/tree/main).
 
 ## Install
 
